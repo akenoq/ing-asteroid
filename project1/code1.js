@@ -13,46 +13,56 @@ window.onload = function () {
 
 	
 	function drawFon () {
-		holst.clearRect (0,0, 600, 800);
+		holst.fillStyle = '#000000';
+		holst.fillRect (0,0, 600, 800);
 	}
-	let xx = 40;
-	let yy=50;
+
+
+
+
+	function Logic (){
 	
+	}
+	
+	class spaceShip {
+		
+		constructor (x=0,y=0){
+			this.x=x;
+			this.y=y;
+			this.t=0;
+		}
+		
+		draw () {
+			holst.strokeStyle = '#FFFFFF';
+			drawLine (0,-45,25,20, this.x, this.y, this.t);
+			drawLine (0,-45,-25,20, this.x, this.y, this.t);
+			drawLine (25,20,0,10, this.x, this.y, this.t);
+			drawLine (-25,20,0,10, this.x, this.y, this.t);	
+		}
+		
+	}
+	let ship = new spaceShip (200,200);
+	let t=0;
 	function Redraw (){
 		drawFon();
-		holst.fillRect (xx, yy, 100, 100);
+		ship.draw ();
 	}
-	let speedX=1;
-	let speedY=1;
 	
-	function Move (){
-		/*xx+=speedX;
-		yy+=speedY;
-		if (xx>=500) {
-			speedX=-speedX;
-		} else {
-			if (xx<=0) {
-				speedX=-speedX;
-			}
-		}
-		if (yy>=700) {
-			speedY=-speedY;
-		} else {
-			if (yy<=0) {
-				speedY=-speedY;
-			}
-		}*/
-		if (d) {xx+=speedX;} else {xx-=speedX;}
-		if (s) {yy+=speedY;} else {yy-=speedY;}
-		if (a) {xx-=speedX;} else {xx+=speedX;}
-		if (w) {yy-=speedY;} else {yy+=speedY;}
-		
-		
-		
+	function drawLine (x1,y1,x2,y2,xc,yc, t){
+		let xn1 = (x1)*Math.cos(t)-(y1)*Math.sin(t);
+		let yn1 = (x1)*Math.sin(t)+(y1)*Math.cos(t);
+		let xn2 = (x2)*Math.cos(t)-(y2)*Math.sin(t);
+		let yn2 = (x2)*Math.sin(t)+(y2)*Math.cos(t);
+		holst.beginPath ();
+		holst.moveTo (xn1+xc, yn1+yc);
+		holst.lineTo (xn2+xc, yn2+yc);
+		holst.closePath ();
+		holst.stroke ();
 	}
-	//https://github.com/akenoq/ing-asteroid
+
+	
 	let a = false;
-	let s =false;
+	let s = false;
 	let d = false;
 	let w = false;
 	
@@ -75,6 +85,6 @@ window.onload = function () {
 	
 
 	let timerDraw = setInterval (Redraw, 20);
-	let timerMove = setInterval (Move, 20);
+	let timerLogic = setInterval (Logic, 20);
 
 }
