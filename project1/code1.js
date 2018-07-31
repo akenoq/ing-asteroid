@@ -20,9 +20,7 @@ window.onload = function () {
 
 
 
-	function Logic (){
 	
-	}
 	
 	class spaceShip {
 		
@@ -40,12 +38,71 @@ window.onload = function () {
 			drawLine (-25,20,0,10, this.x, this.y, this.t);	
 		}
 		
+		rotation () {
+			if (a) this.t-=0.01;
+			if (d) this.t+=0.01;
+		}
+		
+	}
+	
+	class asteroid {
+		
+		constructor (x=0, y=0, speed=4){
+			this.x=x;
+			this.y=y;
+			this.vecX=ship.x-x;
+			this.vecY=ship.y-y;
+			this.speed=speed;
+			let c = Math.sqrt (this.vecX*this.vecX+this.vecY*this.vecY);
+			this.vecX=this.vecX/c;
+			this.vecY=this.vecY/c;
+		}
+		
+		draw(){
+			holst.beginPath ();
+			holst.arc (this.x, this.y, 10, 0 , Math.PI*2, true);
+			holst.closePath();
+			holst.strokeStyle = '#FF0000';
+			holst.stroke ();
+		}
+		
+		move(){
+			this.x+=this.vecX*this.speed;
+			this.y+=this.vecY*this.speed;
+		}
+			
 	}
 	let ship = new spaceShip (200,200);
+	let astros = [];
+	
+	
+
+	
+	let enemyOnMap = 8;
+	function Population () {
+		let l = astros.length;
+		if (l<enemyOnMap){
+			astros.push (new asteroid(10,10,2));
+		}
+	}
+	
+
+	
 	let t=0;
 	function Redraw (){
 		drawFon();
 		ship.draw ();
+		for (let i = 0; i<astros.length; i++){
+			astros[i].draw();
+		}
+	}
+	
+	function Logic (){
+		ship.rotation();
+		ship.draw ();
+		for (let i = 0; i<astros.length; i++){
+			astros[i].move();
+		}
 	}
 	
 	function drawLine (x1,y1,x2,y2,xc,yc, t){
@@ -86,5 +143,5 @@ window.onload = function () {
 
 	let timerDraw = setInterval (Redraw, 20);
 	let timerLogic = setInterval (Logic, 20);
-
+	let timerPopulation = setInterval (Population, 1000);
 }
