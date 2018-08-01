@@ -10,6 +10,8 @@ window.onload = function () {
 	canva.height = 800;
 	canva.width = 800;
 	let holst=canva.getContext('2d');
+	let score=0;
+	let end = false;
 
 	
 	function drawFon () {
@@ -33,7 +35,7 @@ window.onload = function () {
 		return parseInt(Math.random()*(max-min))+min;	
 	}
 	
-	let enemyOnMap = 1;
+	let enemyOnMap = 8;
 	
 	function Population() {
 		let l = astros.length;
@@ -80,8 +82,8 @@ window.onload = function () {
 		constructor (x=0,y=0,speed=4) {  
 			this.x=x;
 			this.y=y;
-			this.vecX=ship.x-x;
-			this.vecY=ship.y-y;
+			this.vecX=ship.x-x+getRandomNumber(-200,200);
+			this.vecY=ship.y-y+getRandomNumber(-200,200);
 			this.speed=speed;
 			let c =Math.sqrt (this.vecX*this.vecX+this.vecY*this.vecY);
 			this.vecX=this.vecX/c;
@@ -144,7 +146,8 @@ window.onload = function () {
 			holst.closePath ();
 			holst.strokeStyle = '#00FF00';
 			holst.stroke ();
-			for (let i=0; i<astros.length; i++){
+			let l = astros.length;
+			for (let i=0; i<l; i++){
 				let dx1 = x1 - astros[i].x;
 				let dx2 = x2 - astros[i].x;
 				let dx3 = x3 - astros[i].x;
@@ -157,9 +160,12 @@ window.onload = function () {
 				let d4 = Math.hypot(x1-x2, y1-y2);
 				let d5 = Math.hypot(x2-x3, y2-y3);
 				let d6 = Math.hypot(x3-x1, y3-y1);
-				if ((d1+d2+d3)<(d4+d5+d6)){
-					scoreLabel.innerHTML = true;
-				} else scoreLabel.innerHTML = false;
+				if ((d1+d2+d3)<=(d4+d5+d6)){
+					score-=10;
+					astros.splice (i,1);
+					i--;
+					l--;
+				}
 			}	
 		}
 		
@@ -199,33 +205,44 @@ window.onload = function () {
 				if (Math.abs(astros[j].x-bullets[i].x)<=9 && Math.abs(astros[j].y-bullets[i].y)<=9) {
 					astros[j].deleted=true;
 					bullets[i].deleted=true;
+					score+=2;
 				}
 			}
 		}
 	}
 	
 	function Logic (){
-		hit ();
-		deleteAstros ();
-		deleteBullet ();
-		for (let i= 0 ; i<bullets.length; i++){
-			bullets[i].move();
-		}
-		ship.rotate();
-		for (let i= 0 ; i<astros.length; i++){
-			astros[i].move();
+		if (end === false){
+			hit ();
+			deleteAstros ();
+			deleteBullet ();
+			for (let i= 0 ; i<bullets.length; i++){
+				bullets[i].move();
+			}
+			ship.rotate();
+			for (let i= 0 ; i<astros.length; i++){
+				astros[i].move();
+			}
 		}
 	}
 	
 	function Redraw (){
-		drawFon();
-		for (let i= 0 ; i<bullets.length; i++){
-			bullets[i].draw();
-		}
-		ship.draw();
-		ship.crush();
-		for (let i= 0 ; i<astros.length; i++){
-			astros[i].draw();
+		if (end === false){
+			scoreLabel.innerHTML = "Очки: "+score;
+			drawFon();
+			for (let i= 0 ; i<bullets.length; i++){
+				bullets[i].draw();
+			}
+			ship.draw();
+			ship.crush();
+			for (let i= 0 ; i<astros.length; i++){
+				astros[i].draw();
+			}
+			
+			if (score<0){
+				end = true;
+				scoreLabel.innerHTML = "Ты проиграл. Набрано очков: "+score;
+			}
 		}
 
 	}
@@ -241,8 +258,7 @@ window.onload = function () {
 		if (keyNumber === 65) a = true;
 		if (keyNumber === 83) s = true;
 		if (keyNumber === 68) d = true;
-		if (keyNumber === 87) w = true;	
-		if (keyNumber === 32) {
+		if (keyNumber === 87) {
 			bullets.push (new bullet (ship.x, ship.y, ship.t, 2));
 		}	
 	}
