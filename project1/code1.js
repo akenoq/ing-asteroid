@@ -117,8 +117,10 @@ window.onload = function () {
 	}
 	
 	let bullets = [];
-	function shoot (){
-		bullets.push (new bullet (ship.x, ship.y, ship.t, 4));
+	function Shoot (){
+		if (w){
+			bullets.push (new bullet (ship.x, ship.y, ship.t, 4));
+		}
 	}
 	
 	function deleteAsteroid (){
@@ -132,11 +134,38 @@ window.onload = function () {
 		}
 	}
 	
+	function deleteBullet (){
+		let l = bullets.length;
+		for (let i  = 0 ; i<l ; i++){
+			if (bullets[i].deleted){
+				bullets.splice (i,1);
+				i--;
+				l--;
+			}
+		}
+	}
+	
+	function hit (){
+		for (let j = 0 ; j<astros.length; j++){
+			for (let i = 0; i<bullets.length; i++){
+				if (Math.hypot((astros[j].x-bullets[i].x),(astros[j].y-bullets[i].y))<=9) {
+					astros[j].deleted=true;
+					bullets[i].deleted=true;
+				}
+			}
+		}
+	}
+	
 	function Logic (){
+		hit();
 		deleteAsteroid ();
+		deleteBullet ();
 		ship.rotation();
 		for (let i = 0; i<astros.length; i++){
 			astros[i].move();
+		}
+		for (let i = 0; i<bullets.length; i++){
+			bullets[i].move();
 		}
 	}
 	
@@ -147,6 +176,9 @@ window.onload = function () {
 		ship.draw ();
 		for (let i = 0; i<astros.length; i++){
 			astros[i].draw();
+		}
+		for (let i = 0; i<bullets.length; i++){
+			bullets[i].draw();
 		}
 	}
 	
@@ -189,5 +221,5 @@ window.onload = function () {
 	let timerDraw = setInterval (Redraw, 20);
 	let timerLogic = setInterval (Logic, 20);
 	let timerPopulation = setInterval (Population, 1000);
-	let timerBullet = setInterval (Shoot, 1000);
+	let timerBullet = setInterval (Shoot, 200);
 }
