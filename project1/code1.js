@@ -20,7 +20,34 @@ window.onload = function () {
 
 
 
-	
+	class bullet {
+		
+		constructor (x, y, t, speed){
+			this.x=x;
+			this.y=y;
+			this.speed=speed;
+			this.t=t;
+			this.deleted = false;
+		}
+		
+		draw () {
+			if (this.x<canva.width && this.x>0 && this.y<canva.height && this.y>0 && this.deleted === false){
+				holst.strokeStyle = '#dff442';
+				drawLine (-2,4,2,4, this.x, this.y, this.t);
+				drawLine (-2,-4,2,-4, this.x, this.y, this.t);
+				drawLine (-2,4,-2,-4, this.x, this.y, this.t);
+				drawLine (2,4,2,-4, this.x, this.y, this.t);
+			} else {
+				this.deleted= true;
+			}
+		}
+		
+		move () {
+			this.x+=this.speed*Math.sin(this.t);
+			this.y-=this.speed*Math.cos(this.t);
+		}
+		
+	}
 	
 	class spaceShip {
 		
@@ -53,17 +80,20 @@ window.onload = function () {
 			this.vecX=ship.x-x;
 			this.vecY=ship.y-y;
 			this.speed=speed;
+			this.deleted = false;
 			let c = Math.sqrt (this.vecX*this.vecX+this.vecY*this.vecY);
 			this.vecX=this.vecX/c;
 			this.vecY=this.vecY/c;
 		}
 		
 		draw(){
-			holst.beginPath ();
-			holst.arc (this.x, this.y, 10, 0 , Math.PI*2, true);
-			holst.closePath();
-			holst.strokeStyle = '#FF0000';
-			holst.stroke ();
+			if (this.x<canva.width && this.x>0 && this.y<canva.height && this.y>0 && this.deleted === false){
+				holst.beginPath ();
+				holst.arc (this.x, this.y, 10, 0 , Math.PI*2, true);
+				holst.closePath();
+				holst.strokeStyle = '#FF0000';
+				holst.stroke ();
+			} else this.deleted=true;
 		}
 		
 		move(){
@@ -86,22 +116,37 @@ window.onload = function () {
 		}
 	}
 	
-
+	let bullets = [];
+	function shoot (){
+		bullets.push (new bullet (ship.x, ship.y, ship.t, 4));
+	}
 	
+	function deleteAsteroid (){
+		let l = astros.length;
+		for (let i  = 0 ; i<l ; i++){
+			if (astros[i].deleted){
+				astros.splice (i,1);
+				i--;
+				l--;
+			}
+		}
+	}
+	
+	function Logic (){
+		deleteAsteroid ();
+		ship.rotation();
+		for (let i = 0; i<astros.length; i++){
+			astros[i].move();
+		}
+	}
+	
+		
 	let t=0;
 	function Redraw (){
 		drawFon();
 		ship.draw ();
 		for (let i = 0; i<astros.length; i++){
 			astros[i].draw();
-		}
-	}
-	
-	function Logic (){
-		ship.rotation();
-		ship.draw ();
-		for (let i = 0; i<astros.length; i++){
-			astros[i].move();
 		}
 	}
 	
@@ -144,4 +189,5 @@ window.onload = function () {
 	let timerDraw = setInterval (Redraw, 20);
 	let timerLogic = setInterval (Logic, 20);
 	let timerPopulation = setInterval (Population, 1000);
+	let timerBullet = setInterval (Shoot, 1000);
 }
