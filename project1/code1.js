@@ -1,9 +1,9 @@
 "use strict";
 
-window.onload = function () {
 	
 	let scoreLabel = document.getElementById ("scoreLabel");
-	let Btn = document.getElementById ("Btn");		
+	let pauseBtn = document.getElementById ("pauseBtn");	
+	let startBtn = document.getElementById ("startBtn");	
 	let editA = document.getElementById ("editA");
 	let editB = document.getElementById ("editB");
 	let canva = document.getElementById ("canva");
@@ -11,8 +11,9 @@ window.onload = function () {
 	canva.width = 800;
 	let holst=canva.getContext('2d');
 	let score=0;
+	let max = 0;
 	let end = false;
-
+	let pause = true;
 	
 	function drawFon () {
 		holst.fillStyle = '#000000';
@@ -39,12 +40,14 @@ window.onload = function () {
 	
 	function Population() {
 		let l = astros.length;
-		if (l<enemyOnMap){
+		if (l<enemyOnMap && pause === false){
 			let xx = getRandomNumber(0,800);
 			let yy = getRandomNumber(700,800);
-			astros[l]=new asteroid(xx,yy,4);
+			astros[l]=new asteroid(xx,yy,4, 1);
 		}
 	}
+	
+	let v = false;
 	
 	class bullet {
 			
@@ -55,10 +58,14 @@ window.onload = function () {
 			this.speed=speed;
 			this.deleted = false;
 		}
-			
+		
 		draw () {
 			if (this.x<canva.width && this.x>0 && this.y<canva.height && this.y>0 && this.deleted === false){
 				holst.strokeStyle = '#dff442';
+				holst.fillStyle = '#00ff00';
+				if (v){
+					holst.fillRect (this.x,this.y,1,2);
+				}
 				drawLine (-2,4,2,4, this.x, this.y, this.t);
 				drawLine (-2,-4,2,-4, this.x, this.y, this.t);
 				drawLine (-2,4,-2,-4, this.x, this.y, this.t);
@@ -79,11 +86,12 @@ window.onload = function () {
 	
 	class asteroid {
 	
-		constructor (x=0,y=0,speed=4) {  
+		constructor (x=0,y=0,speed=4, lvl =1) {  
 			this.x=x;
 			this.y=y;
-			this.vecX=ship.x-x+getRandomNumber(-200,200);
-			this.vecY=ship.y-y+getRandomNumber(-200,200);
+			this.lvl = lvl;
+			this.vecX=ship.x-x+getRandomNumber(-600,600);
+			this.vecY=ship.y-y+getRandomNumber(-600,600);
 			this.speed=speed;
 			let c =Math.sqrt (this.vecX*this.vecX+this.vecY*this.vecY);
 			this.vecX=this.vecX/c;
@@ -94,10 +102,17 @@ window.onload = function () {
 		draw (){
 			if (this.x<canva.width && this.x>0 && this.y<canva.height && this.y>0 && this.deleted === false){
 				holst.beginPath();
-				holst.arc (this.x, this.y, 10, 0, 2*Math.PI, true);
+				holst.arc (this.x, this.y, 10+this.lvl*5, 0, 2*Math.PI, true);
 				holst.closePath();
 				holst.strokeStyle = '#FF0000';
 				holst.stroke ();
+				if (v){
+					holst.beginPath();
+					holst.arc (this.x, this.y, 8+this.lvl*5, 0, 2*Math.PI, true);
+					holst.closePath();
+					holst.strokeStyle = '#00FF00';
+					holst.stroke ();
+				}
 			} else {
 				this.deleted= true;
 			}
@@ -120,32 +135,37 @@ window.onload = function () {
 		
 		draw () {
 			holst.strokeStyle = '#FFFFFF';
-			drawLine (0,-45,25,20, this.x, this.y, this.t);
-			drawLine (0,-45,-25,20, this.x, this.y, this.t);
-			drawLine (25,20,0,10, this.x, this.y, this.t);
-			drawLine (-25,20,0,10, this.x, this.y, this.t);
+			drawLine (3,-35,25,30, this.x, this.y, this.t);
+			drawLine (-3,-35,-25,30, this.x, this.y, this.t);
+			drawLine (-3,-35,-3,5, this.x, this.y, this.t);
+			drawLine (3,-35,3,5, this.x, this.y, this.t);
+			drawLine (-3,5,3,5, this.x, this.y, this.t);
+			drawLine (25,30,0,20, this.x, this.y, this.t);
+			drawLine (-25,30,0,20, this.x, this.y, this.t);
 		}
 		
 		rotate () {
-			if (d) {this.t+=0.03;}
-			if (a) {this.t-=0.03;} 
+			if (d) {this.t+=0.05;}
+			if (a) {this.t-=0.05;} 
 		}
 		
 		crush () {
-			let x1 = (0)*Math.cos(this.t)-(-45)*Math.sin(this.t)+this.x;
-			let y1 = (0)*Math.sin(this.t)+(-45)*Math.cos(this.t)+this.y;
-			let x2 = (-25)*Math.cos(this.t)-(20)*Math.sin(this.t)+this.x;
-			let y2 = (-25)*Math.sin(this.t)+(20)*Math.cos(this.t)+this.y;
-			let x3 = (25)*Math.cos(this.t)-(20)*Math.sin(this.t)+this.x;
-			let y3 = (25)*Math.sin(this.t)+(20)*Math.cos(this.t)+this.y;
-			holst.beginPath ();
-			holst.moveTo (x1,y1);
-			holst.lineTo (x2,y2);
-			holst.lineTo (x3,y3);
-			holst.lineTo (x1,y1);
-			holst.closePath ();
-			holst.strokeStyle = '#00FF00';
-			holst.stroke ();
+			let x1 = (0)*Math.cos(this.t)-(-30)*Math.sin(this.t)+this.x;
+			let y1 = (0)*Math.sin(this.t)+(-30)*Math.cos(this.t)+this.y;
+			let x2 = (-20)*Math.cos(this.t)-(25)*Math.sin(this.t)+this.x;
+			let y2 = (-20)*Math.sin(this.t)+(25)*Math.cos(this.t)+this.y;
+			let x3 = (20)*Math.cos(this.t)-(25)*Math.sin(this.t)+this.x;
+			let y3 = (20)*Math.sin(this.t)+(25)*Math.cos(this.t)+this.y;
+			if (v){
+				holst.beginPath ();
+				holst.moveTo (x1,y1);
+				holst.lineTo (x2,y2);
+				holst.lineTo (x3,y3);
+				holst.lineTo (x1,y1);
+				holst.closePath ();
+				holst.strokeStyle = '#00FF00';
+				holst.stroke ();
+			}
 			let l = astros.length;
 			for (let i=0; i<l; i++){
 				let dx1 = x1 - astros[i].x;
@@ -161,7 +181,7 @@ window.onload = function () {
 				let d5 = Math.hypot(x2-x3, y2-y3);
 				let d6 = Math.hypot(x3-x1, y3-y1);
 				if ((d1+d2+d3)<=(d4+d5+d6)){
-					score-=10;
+					score-=(astros[i].lvl+1)*5;
 					astros.splice (i,1);
 					i--;
 					l--;
@@ -170,20 +190,29 @@ window.onload = function () {
 		}
 		
 	}
+	
 	scoreLabel.innerHTML = false;
 	let ship = new spaceShip(400,400);
 	let astros=[];
 	let bullets = [];
 	let bull=new bullet (200,200 , 0, 3);
 	
-	
 	function deleteAstros (){
 		let l = astros.length;
 		for (let i = 0; i<l; i++){
 			if (astros[i].deleted){
-				astros.splice (i, 1);
-				i--;
-				l--;
+				if (astros[i].lvl === 0){
+					astros.splice (i, 1);
+					i--;
+					l--;
+				} else {
+					astros.push (new asteroid (astros[i].x, astros[i].y, 3, 0));
+					astros.push (new asteroid (astros[i].x, astros[i].y, 3, 0));
+					astros.push (new asteroid (astros[i].x, astros[i].y, 3, 0));
+					astros.splice (i, 1);
+					i--;
+					l--;
+				}
 			}
 		}
 	}
@@ -202,17 +231,20 @@ window.onload = function () {
 	function hit (){
 		for (let j = 0 ; j<astros.length; j++){
 			for (let i = 0; i<bullets.length; i++){
-				if (Math.abs(astros[j].x-bullets[i].x)<=9 && Math.abs(astros[j].y-bullets[i].y)<=9) {
+				if (Math.hypot((astros[j].x-bullets[i].x),(astros[j].y-bullets[i].y))<(astros[j].lvl+1)*9) {
 					astros[j].deleted=true;
 					bullets[i].deleted=true;
-					score+=2;
+					score+=2*(astros[j].lvl+1);
 				}
 			}
 		}
 	}
 	
 	function Logic (){
-		if (end === false){
+		if (score>max) {
+			max=score;
+		}
+		if (end === false && pause === false){
 			hit ();
 			deleteAstros ();
 			deleteBullet ();
@@ -227,7 +259,7 @@ window.onload = function () {
 	}
 	
 	function Redraw (){
-		if (end === false){
+		if (end === false && pause === false){
 			scoreLabel.innerHTML = "Очки: "+score;
 			drawFon();
 			for (let i= 0 ; i<bullets.length; i++){
@@ -238,13 +270,11 @@ window.onload = function () {
 			for (let i= 0 ; i<astros.length; i++){
 				astros[i].draw();
 			}
-			
 			if (score<0){
 				end = true;
-				scoreLabel.innerHTML = "Ты проиграл. Набрано очков: "+score;
+				scoreLabel.innerHTML = "Ты проиграл. Набрано очков: "+max;
 			}
 		}
-
 	}
 	
 	let a = false;
@@ -256,10 +286,10 @@ window.onload = function () {
         let keyNumber = event.keyCode;
 		console.log(keyNumber);
 		if (keyNumber === 65) a = true;
-		if (keyNumber === 83) s = true;
+		if (keyNumber === 86) v=!v;
 		if (keyNumber === 68) d = true;
-		if (keyNumber === 87) {
-			bullets.push (new bullet (ship.x, ship.y, ship.t, 2));
+		if (keyNumber === 87 && pause === false) {
+			bullets.push (new bullet (ship.x, ship.y, ship.t, 5));
 		}	
 	}
 	window.onkeyup = function (event) {
@@ -271,9 +301,28 @@ window.onload = function () {
 		if (keyNumber === 87) w = false;
 	}
 	
+	pauseBtn.onclick = function () {
+		pause=!pause;
+		if(pause === true) {
+        canva.style.opacity = 0.5;
+		}
+		if(pause === false) {
+			canva.style.opacity = 1.0;
+		}
+	}
+	
+	startBtn.onclick = function () {
+		pause = false;
+		end=false;
+		ship.t=0;
+		astros=[];
+		bullets=[];;
+		score=0;
+		scoreLabel.innerHTML = "Очки: " + score;
+	}
+	
 
 	let timerDraw = setInterval (Redraw, 20);
 	let timerLogic = setInterval (Logic, 20);
 	let timerPopulation = setInterval (Population, 1000);
 
-}
