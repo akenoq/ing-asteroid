@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Телефонная книга</title>
+    <style>
+		body {
+			background: #FFEDF2;
+			text-align: center;
+			font-size: 25px;
+			font-family: Arial;
+			background-image: url("book.jpg");
+		}
+		
+		#result {
+			color: #00FF00;
+		}
+		
+		#error {
+			color: #FF0000;
+		}		
+		
+		button {
+			outline: none;
+			background: #ff836f;
+			padding: 20px;
+			margin-top: 10px;
+			border: 2px solid #ff0000;
+			border-radius: 15px;
+			color: #FFFFFF;
+		}
+		
+		button:hover {
+			cursor: pointer;
+			margin-top: 3px;
+			padding: 25px;
+			background: #ff7f50;
+		}
+		
+		h1 {
+			color: limegreen;
+		}
+		
+		.adding {
+			color: #ae07b3;
+		}
+		
+		.finding {
+			color: #33a900;
+		}
+		
+		#addBtn {
+			background: #ae07b3;
+		}
+		
+		#findBtn {
+			background: #33a900;
+		}
+		
+		hr {
+			border-color: limegreen;
+			border-width: 5px;
+		}
+		
+    </style>    
+</head>
+<body>
+	<h1>Телефонная книга</h1>
+	
+	<div class="adding">
+		<h3>Добавить запись</h3>
+		<b>Имя</b>
+		<input type="text" id="editA">
+		<br>
+		<b>Телефон</b>
+		<input type="text" id="editB">
+		<br>
+		<button id="addBtn">Добавить</button>
+		<br>
+	</div>
+	
+	<hr>
+	
+	<div class="finding">
+		<h3>Найти запись</h3>
+		<b>Имя для поиска</b>
+		<input type="text" id="editC">
+		<br>
+		<button id="findBtn">Найти</button>
+		<br>
+	</div>
+	
+	<h2 id="result"></h2>
+	<h2 id="error"></h2>
+	
+	<script src="code.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
